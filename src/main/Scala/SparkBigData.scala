@@ -7,18 +7,21 @@ import org.apache.spark.sql.types._
 import org.apache.spark.sql.catalyst.plans._
 import org.apache.spark.sql.expressions._
 import org.apache.hadoop.fs._
+import org.apache.log4j.{LogManager, Logger}
+import org.apache.log4j._
 
+import java.io.FileNotFoundException
 
-
-import java.util.logging.LogManager
+//import java.util.logging.LogManager
 
 //Developpement d'applications Big Data en Spark
 
 object SparkBigData {
+
   var ss : SparkSession = null
   //var spConf : SparkConf = null
 
-  //private var trace_log : logger = LogManager.getLogger( name = "Logger_Console")
+  private val trace_log : Logger = LogManager.getLogger( "Logger_Console")
 
   val schema_orders = StructType(Array(
     StructField("orderid", IntegerType, false),
@@ -416,20 +419,26 @@ object SparkBigData {
    */
 
   def Session_Spark(Env : Boolean = true) : SparkSession = {
-    if (Env == true) {
-      System.setProperty("hadoop.home.dir", "C:/Hadoop")
-      ss = SparkSession.builder()
-        .master(master = "local[*]")
-        .config("spark.sql.crossJoin.enabled", "true")
-        //.enableHiveSupport()
-        .getOrCreate()
-    }else {
-      ss = SparkSession.builder()
-        .appName(name = "Mon application Spark")
-        .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-        .config("spark.sql.crossJoin.enabled", "true")
-        //.enableHiveSupport()
-        .getOrCreate()
+    trace_log.info("initialisation du contexte Spark Streaming")
+    try {
+      if (Env == true) {
+        System.setProperty("hadoop.home.dir", "C:/Hadoop") //à logger
+        ss = SparkSession.builder()
+          .master(master = "local[*]")
+          .config("spark.sql.crossJoin.enabled", "true")
+          //.enableHiveSupport()
+          .getOrCreate()
+      } else {
+        ss = SparkSession.builder()
+          .appName(name = "Mon application Spark")
+          .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+          .config("spark.sql.crossJoin.enabled", "true")
+          //.enableHiveSupport()
+          .getOrCreate()
+      }
+    } catch {
+      case ex : FileNotFoundException => trace_log.error("Nous n'avons pas trouvé le winutils dans le chemin indiqué" + ex.printStackTrace())
+      case ex : Exception => trace_log.error("Erreur dans l'initialisation de la session Spark" + ex.printStackTrace())
     }
     ss
 

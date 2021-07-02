@@ -1,16 +1,50 @@
+
+import org.apache.avro.ipc.specific.Person
+import org.apache.log4j._
+
+import scala.tools.nsc.doc.model.Public
+import scala.collection.mutable
 import org.apache.avro.ipc.specific.Person
 
 import scala.tools.nsc.doc.model.Public
 import scala.collection.mutable._
+import org.apache.log4j._
+
+import java.io.FileNotFoundException
+import scala.io._
+
+import PackageTest.PBGS.ClassTest
 
 object HelloWorldBigData {
   /* premier programme */
   val ma_var_imm: String = "Abel" //variable immutable
-  private val une_var_imm: String = "Formation Big Data" /* variable à portée privée */
+
 
   class Person (var nom : String, var prenom : String, var age : Int )
 
+  private val une_var_imm: String = "Formation Big Data" /* variable à portée privée */
+  BasicConfigurator.configure()
+  private val trace_appli : Logger = LogManager.getLogger("Logger_Console")
+
+
   def main(args: Array[String]): Unit = {
+
+
+    val tt : ClassTest = new ClassTest
+   val ttt : Int = tt.comptage_package("essai")
+
+    val diviseur : Double = try {
+      division(12, 0)
+    } catch {
+      case ex : ArithmeticException => 0
+      case ex2 : IllegalArgumentException => 0
+    }
+    trace_appli.info(s"la valeur de votre division est de ${diviseur}")
+
+    lecture_fichier("c:/programmes/mesdonnees.txt")
+    val nombre : Int = convert_entier("10")
+    trace_appli.info(s"la valeur de votre nombre converti est : ${nombre}")
+
     println("Hello World : mon premier programme scala")
 
     var test_mu: Int = 15 //variable mutable
@@ -22,7 +56,7 @@ object HelloWorldBigData {
     //test_imm = 10 + 2
 
     //println(test_imm)
-    println("Votre texte contient :" + Comptage_caracteres(texte = "qu'avez vous mangé ce matin ?") + " caractères")
+    println("Votre texte contient :" + comptage_caracteres(texte = "qu'avez vous mangé ce matin ?") + " caractères")
     getResultat(parametre = 10)
     testWhile(valeur_cond = 10)
     testFor()
@@ -32,18 +66,27 @@ object HelloWorldBigData {
   }
 
   //ma première fonction
-  def Comptage_caracteres(texte: String): Int = {
-    texte.trim.length()
+  def comptage_caracteres(texte: String): Int = {
+
+    trace_appli.info("demarrage du traçage de la classe")
+    trace_appli.info(s"le paramètre tracé par Log4J pour cette fonction est: $texte")
+    trace_appli.warn(s"Message d'avertissement Log4J interpolation de chaines: ${10 + 15}")
+
+    if (texte.isEmpty){
+      0
+    }else {
+      texte.trim.length()
+    }
   }
 
   //syntaxe 2
-  def Comptage_caracteres2(texte: String): Int = {
+  def comptage_caracteres2(texte: String): Int = {
     return texte.trim.length()
 
   }
 
     //syntaxe 3
-    def Comptage_caracteres3 (texte : String) : Int = texte.trim.length()
+    def comptage_caracteres3 (texte : String) : Int = texte.trim.length()
 
   //ma première méthode/procédure
   def getResultat (parametre : Any) : Unit = {
@@ -70,7 +113,7 @@ object HelloWorldBigData {
     }
   }
   // Ma première fonction
-  def Comptage_caracteres4(texte: String): Int = {
+  def comptage_caracteres4(texte: String): Int = {
     texte.trim.length()
   }
 
@@ -137,13 +180,39 @@ object HelloWorldBigData {
   val personne = Map(
     "nom" -> "TRAORE",
     "prenom" -> "Abel",
-    "age" -> 40
+    "age" -> 41
   )
 
   //les tableaux ou Array
   val montableau : Array[String] = Array("juv","jvc", "test")
  montableau.foreach(e => println(e))
 
+  def convert_entier (nombre_chaine : String) : Int = {
+    try {
+      val nombre: Int = nombre_chaine.toInt
+      return nombre
+    } catch {
+      case ex : Exception => 0
+
+    }
+
+  }
+
+  def lecture_fichier(chemin_fichier : String) : Unit = {
+    try {
+      val fichier = Source.fromFile(chemin_fichier)
+      fichier.getLines()
+      fichier.close()
+    } catch {
+      case ex : FileNotFoundException => trace_appli.error("votre fichier est introuvable. Vérifiez le chemin d'accès" + ex.printStackTrace())
+    }
+
+  }
+
+def division(numerateur : Int, denominateur : Int) : Double = {
+  val resultat = numerateur/denominateur
+  return resultat
+}
 
 
 

@@ -30,7 +30,7 @@ L'auteur de ce projet est Abel TRAORE
 **Juvenal CHOCKOGUE**
 
 # Version
-1.0 et date de soumission
+1.0
 
 # Licence
 Projet soumis au droit d'auteur.
